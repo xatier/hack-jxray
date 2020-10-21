@@ -8,6 +8,7 @@
 //     javac HackJXray.java && java HackJXray
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -87,9 +88,14 @@ public class HackJXray {
 		String license = prefs.get(licenseKey, "<no licenseKey>");
 		String emailenc = prefs.get(emailKey, "<no emailKey>");
 		String timestamp = prefs.get(expiretsKey, "no expire timestamp");
-		int days = (int) LocalDateTime.now().until(
-			LocalDateTime.parse(decodeTimestamp(timestamp)), ChronoUnit.DAYS
-		);
+		int days = 0;
+		try {
+			days = (int) LocalDateTime.now().until(
+				LocalDateTime.parse(decodeTimestamp(timestamp)), ChronoUnit.DAYS
+			);
+		} catch (DateTimeParseException e) {
+			System.out.println("[-] No valid expiration timestamp stored");
+		}
 
 		// jxray checks installCheckKey against the gold
 		System.out.println("[+] Reading from jxray preferences store\n");
